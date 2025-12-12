@@ -1,0 +1,21 @@
+{
+  "name": "plinko",
+  "version": "1.0.0",
+  "description": "",
+  "main": "score.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "serve ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
