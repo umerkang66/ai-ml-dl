@@ -1,1 +1,1 @@
-i'm a teacher i'm creating notes for my students, i'm creating notes that if they read this notes, they don't have to watch any lecture or read any blog or book on that topic, now create these notes on topic [adaboost ml algorithm] in markdown format
+i'm a teacher i'm creating notes for my students, i'm creating notes that if they read this notes, they don't have to watch any lecture or read any blog or book on that topic, now create these notes on topic [pca ml algorithm] in markdown format
