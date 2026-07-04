@@ -1,2 +1,86 @@
+# --- User-specified ---
 venv
 *-info
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Virtual environments ---
+env/
+.venv/
+env.bak/
+venv.bak/
+ENV/
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# --- Environment / secrets ---
+.env
+.env.*
+*.cfg
+!setup.cfg
+secrets.yaml
+config_local.py
+
+# --- ML / Data Science specific ---
+# Datasets (usually too large / not versioned)
+data/
+datasets/
+*.csv
+*.tsv
+*.parquet
+*.h5
+*.hdf5
+*.feather
+
+# Model artifacts / checkpoints
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.pb
+*.h5model
+models/
+checkpoints/
+saved_models/
+weights/
+
+# Logs & experiment tracking
+logs/
+*.log
+runs/
+lightning_logs/
+mlruns/
+wandb/
+tensorboard/
+events.out.tfevents.*
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# --- OS files ---
+Thumbs.db
+desktop.ini
+
+# --- Testing / Coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
