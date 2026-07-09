@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Student Math Performance Predictor</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            /* Minimalist Color Palette */
+            --clr-bg: #FAF9F6;
+            --clr-text-main: #1C1B19;
+            --clr-text-muted: #6E6D6A;
+            --clr-border: rgba(28, 27, 25, 0.08);
+            --clr-border-focus: rgba(15, 110, 86, 0.3);
+            --clr-teal: #0F6E56;
+            --clr-red: #A32D2D;
+            --clr-blue: #185FA5;
+            
+            --radius-md: 12px;
+            --radius-sm: 6px;
+            --transition: all 0.25s ease;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--clr-bg);
+            color: var(--clr-text-main);
+            font-family: var(--font-body);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            padding: 3rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1050px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Minimal Header */
+        header {
+            text-align: center;
+            padding-bottom: 0.5rem;
+        }
+
+        header h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--clr-text-main);
+        }
+
+        header p {
+            font-size: 0.75rem;
+            color: var(--clr-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* Predictor Layout (Side-by-Side) */
+        .predictor-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .predictor-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Minimal Form Card */
+        .predictor-form-card {
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--clr-border);
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        .form-grid-predict {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .input-row-half {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 500px) {
+            .input-row-half {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
+
+        .input-predict-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .input-predict-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--clr-text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .input-predict-group label i {
+            color: var(--clr-teal);
+            font-size: 0.85rem;
+        }
+
+        .form-input-predict {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--clr-text-main);
+            background-color: var(--clr-bg);
+            border: 1.5px solid transparent;
+            border-radius: var(--radius-sm);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-input-predict:focus {
+            border-color: var(--clr-teal);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px var(--clr-border-focus);
+        }
+
+        .select-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236E6D6A' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 10px;
+            padding-right: 2rem;
+            cursor: pointer;
+        }
+
+        /* Help/Explanation Text */
+        .input-help {
+            font-size: 0.7rem;
+            color: var(--clr-text-muted);
+            line-height: 1.3;
+        }
+
+        /* Button */
+        .btn-primary {
+            background-color: var(--clr-teal);
+            color: #ffffff;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: #0c5744;
+            transform: translateY(-1px);
+        }
+
+        /* Prediction Result Panel */
+        .prediction-result-panel {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .prediction-display-card, .prediction-info-card {
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--clr-border);
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .prediction-info-card {
+            align-items: flex-start;
+            justify-content: flex-start;
+            background-color: rgba(95, 94, 90, 0.02);
+            border-style: dashed;
+        }
+
+        .prediction-info-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--clr-text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prediction-info-card p {
+            font-size: 0.8rem;
+            color: var(--clr-text-muted);
+            line-height: 1.5;
+        }
+
+        .prediction-display-card.error-state {
+            border-color: rgba(163, 45, 45, 0.2);
+            background-color: rgba(163, 45, 45, 0.01);
+        }
+
+        .result-horizontal-group {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .predicted-score-circle {
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            background-color: rgba(15, 110, 86, 0.05);
+            color: var(--clr-teal);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--clr-teal);
+            flex-shrink: 0;
+            padding: 0.75rem;
+            box-sizing: border-box;
+        }
+
+        .predicted-score-circle.error {
+            background-color: rgba(163, 45, 45, 0.05);
+            color: var(--clr-red);
+            border-color: var(--clr-red);
+        }
+
+        .predicted-score-circle .number {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .predicted-score-circle .label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--clr-text-muted);
+            letter-spacing: 0.5px;
+            margin-top: 0.15rem;
+        }
+
+        .prediction-text-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex-grow: 1;
+        }
+
+        .prediction-text-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--clr-teal);
+            font-weight: 700;
+        }
+
+        .prediction-text-content p {
+            font-size: 0.8rem;
+            color: var(--clr-text-muted);
+            line-height: 1.4;
+        }
+
+        /* Minimal Progress Bar */
+        .score-bar-container {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .score-bar-track {
+            background-color: var(--clr-bg);
+            height: 6px;
+            border-radius: 3px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .score-bar-fill-animate {
+            height: 100%;
+            background-color: var(--clr-teal);
+            border-radius: 3px;
+            width: 0;
+            transition: width 1s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- HEADER -->
+        <header>
+            <h1>Aegis Student Analytics</h1>
+            <p>AI Math Performance Predictor</p>
+        </header>
+
+        <!-- PREDICTOR MAIN AREA -->
+        <div class="predictor-container">
+            
+            <!-- Form Card (Left Side) -->
+            <div class="predictor-form-card">
+                <form action="/predict" method="POST">
+                    <div class="form-grid-predict">
+                        
+                        <!-- Gender & Race Row -->
+                        <div class="input-row-half">
+                            <!-- Gender -->
+                            <div class="input-predict-group">
+                                <label for="pred_gender"><i class="bi bi-gender-ambiguous"></i> Gender</label>
+                                <select id="pred_gender" name="gender" class="form-input-predict select-control" required>
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                </select>
+                                <span class="input-help">The student's biological sex. Used to examine gender diversity and demographic math trends.</span>
+                            </div>
+                            
+                            <!-- Race/Ethnicity -->
+                            <div class="input-predict-group">
+                                <label for="pred_race"><i class="bi bi-people-fill"></i> Race / Ethnicity</label>
+                                <select id="pred_race" name="race_ethnicity" class="form-input-predict select-control" required>
+                                    <option value="group A">Group A</option>
+                                    <option value="group B">Group B</option>
+                                    <option value="group C" selected>Group C</option>
+                                    <option value="group D">Group D</option>
+                                    <option value="group E">Group E</option>
+                                </select>
+                                <span class="input-help">Anonymized cultural group classification of student demographic background.</span>
+                            </div>
+                        </div>
+
+                        <!-- Parental level of education -->
+                        <div class="input-predict-group">
+                            <label for="pred_education"><i class="bi bi-journal-bookmark-fill"></i> Parental Level of Education</label>
+                            <select id="pred_education" name="parental_level_of_education" class="form-input-predict select-control" required>
+                                <option value="some high school">Some High School</option>
+                                <option value="high school">High School</option>
+                                <option value="some college" selected>Some College</option>
+                                <option value="associate's degree">Associate's Degree</option>
+                                <option value="bachelor's degree">Bachelor's Degree</option>
+                                <option value="master's degree">Master's Degree</option>
+                            </select>
+                            <span class="input-help">Highest education completed by guardians. Correlates heavily with academic resources and home support.</span>
+                        </div>
+
+                        <!-- Lunch type & Test prep Row -->
+                        <div class="input-row-half">
+                            <!-- Lunch type -->
+                            <div class="input-predict-group">
+                                <label for="pred_lunch"><i class="bi bi-egg-fried"></i> Lunch Type</label>
+                                <select id="pred_lunch" name="lunch" class="form-input-predict select-control" required>
+                                    <option value="standard" selected>Standard</option>
+                                    <option value="free/reduced">Free/Reduced</option>
+                                </select>
+                                <span class="input-help">Student meal cost structure. Serves as a socioeconomic proxy for household income level.</span>
+                            </div>
+
+                            <!-- Test prep course -->
+                            <div class="input-predict-group">
+                                <label for="pred_prep"><i class="bi bi-check2-square"></i> Test Prep Course</label>
+                                <select id="pred_prep" name="test_preparation_course" class="form-input-predict select-control" required>
+                                    <option value="none" selected>None</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                                <span class="input-help">Indicates completion of structured preparatory courses prior to the standardized math test.</span>
+                            </div>
+                        </div>
+
+                        <!-- Reading & Writing Row -->
+                        <div class="input-row-half">
+                            <!-- Reading score -->
+                            <div class="input-predict-group">
+                                <label for="pred_reading"><i class="bi bi-book"></i> Reading Score (0-100)</label>
+                                <input type="number" id="pred_reading" name="reading_score" class="form-input-predict" min="0" max="100" value="72" required>
+                                <span class="input-help">Standardized reading assessment result. Evaluates literacy, comprehension, and analytical reading.</span>
+                            </div>
+
+                            <!-- Writing score -->
+                            <div class="input-predict-group">
+                                <label for="pred_writing"><i class="bi bi-pen"></i> Writing Score (0-100)</label>
+                                <input type="number" id="pred_writing" name="writing_score" class="form-input-predict" min="0" max="100" value="74" required>
+                                <span class="input-help">Standardized writing assessment result. Evaluates grammar, textual construction, and written expression.</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 0.5rem;">
+                            <button type="submit" class="btn-primary">
+                                <i class="bi bi-cpu-fill"></i> Estimate Mathematics Score
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Result Card / Panel (Right Side) -->
+            <div class="prediction-result-panel">
+                {% if prediction_text %}
+                    {% if "Error" in prediction_text %}
+                        <div class="prediction-display-card error-state">
+                            <div class="result-horizontal-group">
+                                <div class="predicted-score-circle error">
+                                    <span class="number"><i class="bi bi-exclamation-circle-fill"></i></span>
+                                    <span class="label">Error</span>
+                                </div>
+                                <div class="prediction-text-content">
+                                    <h3 style="color: var(--clr-red);">Prediction Failed</h3>
+                                    <p>An issue was encountered: {{ prediction_text }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="prediction-display-card">
+                            <div class="result-horizontal-group">
+                                <div class="predicted-score-circle">
+                                    <span class="number" id="score-val">{{ prediction_text }}</span>
+                                    <span class="label">Score</span>
+                                </div>
+                                <div class="prediction-text-content">
+                                    <h3>Estimated Math Score</h3>
+                                    <p>The ML regressor model estimated this score based on the parameters provided.</p>
+                                    
+                                    <div class="score-bar-container">
+                                        <div class="score-bar-track">
+                                            <div class="score-bar-fill-animate" id="score-bar-fill"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <!-- Default empty info state -->
+                    <div class="prediction-info-card">
+                        <h3><i class="bi bi-cpu"></i> Prediction Engine</h3>
+                        <p>Provide the student's demographic details and assessment scores on the left to trigger the predictive pipeline.</p>
+                        <p>The backend preprocessor scales the values and uses a trained regression model to output the estimated math score.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Save form values to sessionStorage before submission
+        function saveFormValues() {
+            const fields = ['pred_gender', 'pred_race', 'pred_education', 'pred_lunch', 'pred_prep', 'pred_reading', 'pred_writing'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    sessionStorage.setItem(id, el.value);
+                }
+            });
+        }
+
+        // Restore form values from sessionStorage
+        function restoreFormValues() {
+            const fields = ['pred_gender', 'pred_race', 'pred_education', 'pred_lunch', 'pred_prep', 'pred_reading', 'pred_writing'];
+            fields.forEach(id => {
+                const savedVal = sessionStorage.getItem(id);
+                const el = document.getElementById(id);
+                if (el && savedVal !== null) {
+                    el.value = savedVal;
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Bind submit event to save input values
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', saveFormValues);
+            }
+
+            // If a prediction result page loaded, restore the user's inputs
+            {% if prediction_text %}
+                restoreFormValues();
+
+                // Animate progress bar if success score exists and is numeric
+                const scoreVal = document.getElementById('score-val');
+                if (scoreVal) {
+                    const score = parseFloat(scoreVal.innerText);
+                    if (!isNaN(score)) {
+                        setTimeout(() => {
+                            const fill = document.getElementById('score-bar-fill');
+                            if (fill) fill.style.width = score + '%';
+                        }, 150);
+                    }
+                }
+            {% endif %}
+        });
+    </script>
+</body>
+</html>
