@@ -49,4 +49,5 @@ tzdata==2026.2
 wcwidth==0.8.2
 wheel==0.47.0
 xgboost==3.3.0
+dill
 -e .
