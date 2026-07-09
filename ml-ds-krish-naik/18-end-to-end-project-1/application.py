@@ -2,7 +2,8 @@ from flask import Flask, request, render_template
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 # Configure the templates folder as 'template' to match the project directory
-app = Flask(__name__, template_folder="template")
+application = Flask(__name__, template_folder="template")
+app = application
 
 
 @app.route("/")
