@@ -6,6 +6,8 @@ from dataclasses import dataclass
 import pandas as pd
 
 from src.components.data_transformation import DataTransformation
+from src.components.model_trainer import ModelTrainer
+
 from src.exception import CustomException
 from src.logger import logging
 
@@ -66,3 +68,6 @@ if __name__ == "__main__":
             train_data_path, test_data_path
         )
     )
+
+    trainer = ModelTrainer()
+    print(trainer.initiate_model_trainer(train_data, test_data))
