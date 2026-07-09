@@ -1,1 +1,1 @@
-conda create --prefix ./venv python=3.12.7
+conda create --prefix ./venv python=3.13
