@@ -6,6 +6,10 @@ __pycache__/
 # logs 
 logs 
 
+# artifacts
+artifacts
+
+
 # C extensions
 *.so
 
