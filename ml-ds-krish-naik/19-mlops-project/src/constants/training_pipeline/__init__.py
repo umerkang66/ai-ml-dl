@@ -2,15 +2,12 @@
 Defining common constant variable for training pipeline
 """
 
-TARGET_COLUMN: str = "Result"
 PIPELINE_NAME: str = "network_data_training_pipeline"
 ARTIFIACT_DIR: str = "artifacts"
-
-
-"""FILENAME FOR TRAINING AND TEST"""
 FILENAME: str = "PhishingData.csv"
-TRAIN_FILE_NAME: str = "train.csv"
-TEST_FILE_NAME: str = "test.csv"
+TRAIN_FILENAME: str = "train.csv"
+TEST_FILENAME: str = "test.csv"
+TARGET_COLUMN: str = "Result"
 
 
 """

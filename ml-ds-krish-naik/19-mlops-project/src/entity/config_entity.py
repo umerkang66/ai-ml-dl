@@ -27,12 +27,12 @@ class DataIngestionConfig:
         self.training_file_path = os.path.join(
             self.data_ingestion_dir,
             training_pipeline.DATA_INGESTION_INGESTED_DIR,
-            training_pipeline.TRAIN_FILE_NAME,
+            training_pipeline.TRAIN_FILENAME,
         )
         self.testing_file_path = os.path.join(
             self.data_ingestion_dir,
             training_pipeline.DATA_INGESTION_INGESTED_DIR,
-            training_pipeline.TEST_FILE_NAME,
+            training_pipeline.TEST_FILENAME,
         )
         self.train_test_ratio = training_pipeline.DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO
         self.collection_name = training_pipeline.DATA_INGESTION_COLLECTION_NAME
