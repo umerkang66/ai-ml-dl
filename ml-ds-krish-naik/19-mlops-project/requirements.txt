@@ -9,4 +9,6 @@ seaborn
 ipykernel
 xgboost
 catboost
+pyaml
+dill
 -e .
