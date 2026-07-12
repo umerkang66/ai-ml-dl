@@ -7,8 +7,8 @@ __pycache__/
 logs 
 
 # artifacts
-artifacts
-
+artifacts/*
+!artifacts/.gitkeep
 
 # C extensions
 *.so
