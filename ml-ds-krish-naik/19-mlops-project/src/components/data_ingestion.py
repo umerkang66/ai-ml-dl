@@ -80,18 +80,18 @@ class DataIngestion:
 
             logging.info("Exporting the train and test sets to features store")
             os.makedirs(
-                os.path.dirname(self.data_ingestion_config.training_file_path),
+                os.path.dirname(self.data_ingestion_config.train_file_path),
                 exist_ok=True,
             )
             train_set.to_csv(
-                self.data_ingestion_config.training_file_path, index=False, header=True
+                self.data_ingestion_config.train_file_path, index=False, header=True
             )
             os.makedirs(
-                os.path.dirname(self.data_ingestion_config.testing_file_path),
+                os.path.dirname(self.data_ingestion_config.test_file_path),
                 exist_ok=True,
             )
             test_set.to_csv(
-                self.data_ingestion_config.testing_file_path, index=False, header=True
+                self.data_ingestion_config.test_file_path, index=False, header=True
             )
             logging.info("Train and test sets have been exported to features store")
 
@@ -109,8 +109,8 @@ class DataIngestion:
             self.split_data_as_train_test(df)
 
             dataingestion_artifact = DataIngestionArtifactEntity(
-                training_file_path=self.data_ingestion_config.training_file_path,
-                testing_file_path=self.data_ingestion_config.testing_file_path,
+                train_file_path=self.data_ingestion_config.train_file_path,
+                test_file_path=self.data_ingestion_config.test_file_path,
             )
 
             logging.info("Data ingestion completed")
