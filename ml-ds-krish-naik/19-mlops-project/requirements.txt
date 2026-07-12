@@ -4,4 +4,9 @@ numpy
 pymongo[srv]
 certifi
 scikit-learn
+matplotlib
+seaborn
+ipykernel
+xgboost
+catboost
 -e .
