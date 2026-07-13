@@ -7,7 +7,7 @@ from src.entity.artifact_entity import (
     DataValidationArtifactEntity,
 )
 from src.constants.training_pipeline_constants import SCHEMA_FILE_PATH
-from src.entity.config_entity import DataValidationConfig
+from src.entity.config_entity import DataValidationConfigEntity
 from src.utils import read_yaml_file, write_yaml_file
 
 from src.exception import CustomException
@@ -18,7 +18,7 @@ class DataValidation:
     def __init__(
         self,
         data_ingestion_artifact: DataIngestionArtifactEntity,
-        data_validation_config: DataValidationConfig,
+        data_validation_config: DataValidationConfigEntity,
     ):
         try:
             self.data_ingestion_artifact = data_ingestion_artifact

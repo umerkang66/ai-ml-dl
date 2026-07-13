@@ -11,7 +11,7 @@ from src.exception import CustomException
 from src.logger import logging
 
 # configuration for data ingestion
-from src.entity.config_entity import DataIngestionConfig
+from src.entity.config_entity import DataIngestionConfigEntity
 from src.entity.artifact_entity import DataIngestionArtifactEntity
 
 load_dotenv()
@@ -20,7 +20,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 class DataIngestion:
-    def __init__(self, data_ingestion_config: DataIngestionConfig):
+    def __init__(self, data_ingestion_config: DataIngestionConfigEntity):
         try:
             self.data_ingestion_config = data_ingestion_config
         except Exception as e:
