@@ -37,7 +37,7 @@ class DataValidation:
 
     def validate_number_of_columns(self, dataframe: pd.DataFrame) -> bool:
         try:
-            number_of_columns = len(self._schema_config)
+            number_of_columns = len(self._schema_config["columns"])
             logging.info(f"Required number of columns: {number_of_columns}")
             logging.info(f"Dataframe has columns: {dataframe.columns}")
             if len(dataframe.columns) == number_of_columns:
@@ -97,8 +97,18 @@ class DataValidation:
             train_status = self.validate_number_of_columns(train_df)
             test_status = self.validate_number_of_columns(test_df)
 
+            if not train_status or not test_status:
+                raise Exception(
+                    "Data Validation failed. Number of columns are not as per schema."
+                )
+
             # let's check data drift using Kolmogorov-Smirnov test
             drift_status = self.detect_data_drift(base_df=train_df, current_df=test_df)
+
+            if not drift_status:
+                raise Exception(
+                    "Data Validation failed. Data drift is detected between train and test data."
+                )
 
             dir_path = os.path.dirname(
                 self.data_validation_config.valid_train_file_path,
