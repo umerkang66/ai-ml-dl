@@ -56,7 +56,11 @@ class ModelTrainer:
                 mlflow.log_metric("f1_score", f1_score)
                 mlflow.log_metric("precision", precision)
                 mlflow.log_metric("recall", recall)
-                mlflow.sklearn.log_model(best_model, "model")
+
+                if isinstance(best_model, XGBClassifier):
+                    mlflow.xgboost.log_model(best_model, "model")
+                else:
+                    mlflow.sklearn.log_model(best_model, "model")
 
         except Exception as e:
             raise CustomException(e, sys)
