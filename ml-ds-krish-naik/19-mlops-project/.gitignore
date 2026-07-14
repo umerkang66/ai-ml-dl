@@ -6,6 +6,8 @@ __pycache__/
 # logs 
 logs 
 
+catboost-info 
+
 *.pkl
 catboost_info
 
