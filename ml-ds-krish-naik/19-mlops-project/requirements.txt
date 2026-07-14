@@ -11,4 +11,5 @@ xgboost
 catboost
 pyaml
 dill
+mlflow
 -e .

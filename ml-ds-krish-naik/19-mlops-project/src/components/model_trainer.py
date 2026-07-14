@@ -12,8 +12,10 @@ from sklearn.ensemble import (
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
+import mlflow
 
 from src.entity.artifact_entity import (
+    ClassificationMetricArtifactEntity,
     DataTransformationArtifactEntity,
     ModelTrainerArtifactEntity,
 )
@@ -41,6 +43,23 @@ class ModelTrainer:
             self.data_transformation_artifact = data_transformation_artifact
         except Exception as e:
             raise CustomException(e, sys) from e
+
+    def track_mlflow(
+        self, best_model, train_metric: ClassificationMetricArtifactEntity
+    ):
+        try:
+            with mlflow.start_run():
+                f1_score = train_metric.f1_score
+                precision = train_metric.precision_score
+                recall = train_metric.recall_score
+
+                mlflow.log_metric("f1_score", f1_score)
+                mlflow.log_metric("precision", precision)
+                mlflow.log_metric("recall", recall)
+                mlflow.sklearn.log_model(best_model, "model")
+
+        except Exception as e:
+            raise CustomException(e, sys)
 
     def train_model(
         self, X_train, y_train, X_test, y_test
@@ -119,7 +138,12 @@ class ModelTrainer:
                 y_pred=y_train_pred,
             )
 
-            # TODO: track the mlflow
+            self.track_mlflow(
+                best_model=best_model, train_metric=classification_train_metric
+            )
+            self.track_mlflow(
+                best_model=best_model, train_metric=classification_test_metric
+            )
 
             classification_test_metric = get_classification_score(
                 y_true=y_test,
