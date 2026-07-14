@@ -142,16 +142,16 @@ class ModelTrainer:
                 y_pred=y_train_pred,
             )
 
+            classification_test_metric = get_classification_score(
+                y_true=y_test,
+                y_pred=y_test_pred,
+            )
+
             self.track_mlflow(
                 best_model=best_model, train_metric=classification_train_metric
             )
             self.track_mlflow(
                 best_model=best_model, train_metric=classification_test_metric
-            )
-
-            classification_test_metric = get_classification_score(
-                y_true=y_test,
-                y_pred=y_test_pred,
             )
 
             preprocessor = load_object(
