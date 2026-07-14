@@ -44,15 +44,15 @@ class ModelTrainer:
         except Exception as e:
             raise CustomException(e, sys) from e
 
-    def track_mlflow(
-        self, best_model, train_metric: ClassificationMetricArtifactEntity
-    ):
+    def track_mlflow(self, best_model, metrics: ClassificationMetricArtifactEntity):
         try:
             with mlflow.start_run():
-                f1_score = train_metric.f1_score
-                precision = train_metric.precision_score
-                recall = train_metric.recall_score
+                accuracy = metrics.accuracy
+                f1_score = metrics.f1_score
+                precision = metrics.precision_score
+                recall = metrics.recall_score
 
+                mlflow.log_metric("accuracy", accuracy)
                 mlflow.log_metric("f1_score", f1_score)
                 mlflow.log_metric("precision", precision)
                 mlflow.log_metric("recall", recall)
@@ -148,10 +148,12 @@ class ModelTrainer:
             )
 
             self.track_mlflow(
-                best_model=best_model, train_metric=classification_train_metric
+                best_model=best_model,
+                metrics=classification_train_metric,
             )
             self.track_mlflow(
-                best_model=best_model, train_metric=classification_test_metric
+                best_model=best_model,
+                metrics=classification_test_metric,
             )
 
             preprocessor = load_object(

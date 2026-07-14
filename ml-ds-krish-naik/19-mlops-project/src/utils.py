@@ -116,15 +116,16 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, params):
 
 def get_classification_score(y_true, y_pred) -> ClassificationMetricArtifactEntity:
     try:
-
+        model_accuracy_score = np.mean(y_true == y_pred)
         model_f1_score = f1_score(y_true, y_pred)
         model_recall_score = recall_score(y_true, y_pred)
         model_precision_score = precision_score(y_true, y_pred)
 
         classification_metric = ClassificationMetricArtifactEntity(
-            f1_score=model_f1_score,
-            precision_score=model_precision_score,
-            recall_score=model_recall_score,
+            accuracy=float(model_accuracy_score),
+            f1_score=float(model_f1_score),
+            precision_score=float(model_precision_score),
+            recall_score=float(model_recall_score),
         )
         return classification_metric
     except Exception as e:
