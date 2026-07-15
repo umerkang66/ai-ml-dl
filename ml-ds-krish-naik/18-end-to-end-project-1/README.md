@@ -9,9 +9,7 @@ This guide details the end-to-end setup and deployment steps to host this Flask 
 Follow these steps to configure your AWS infrastructure, setup your EC2 host environment, and establish automated deployment.
 
 ### 1. AWS IAM Configuration (Identity & Access Management)
-
 Create an IAM User to allow GitHub Actions to securely build, push, and deploy containers:
-
 1. Navigate to the **IAM Console** in AWS.
 2. Select **Users** and click **Create user**.
 3. Name the user (e.g., `github-actions-ml-deploy`).
@@ -25,9 +23,7 @@ Create an IAM User to allow GitHub Actions to securely build, push, and deploy c
 ---
 
 ### 2. AWS Elastic Container Registry (ECR) Setup
-
 Create a private repository to host your Docker images:
-
 1. Navigate to the **Amazon ECR** console.
 2. Click **Create repository**.
 3. Choose **Private** visibility settings.
@@ -38,9 +34,7 @@ Create a private repository to host your Docker images:
 ---
 
 ### 3. AWS EC2 Instance Setup
-
 Launch and configure your virtual server:
-
 1. Navigate to the **EC2 Console** and click **Launch instance**.
 2. **Name:** `ml-prediction-server`.
 3. **OS Image:** Select **Ubuntu** (Ubuntu Server 22.04 LTS or 24.04 LTS recommended).
@@ -56,7 +50,6 @@ Launch and configure your virtual server:
 ---
 
 ### 4. EC2 Instance Host Configuration
-
 Once the instance is running, connect via SSH and install the required dependencies:
 
 ```bash
@@ -76,15 +69,12 @@ sudo systemctl enable docker
 # Add the 'ubuntu' user to the docker group so you don't need 'sudo' for docker commands
 sudo usermod -aG docker ubuntu
 ```
-
-_Note: Run `newgrp docker` or log out and log back in to apply the group membership changes._
+*Note: Run `newgrp docker` or log out and log back in to apply the group membership changes.*
 
 ---
 
 ### 5. GitHub Repository Secrets Configuration
-
 To link your repository to AWS and automate the CI/CD pipeline, add the following secrets in GitHub:
-
 1. Go to your GitHub repository -> **Settings** -> **Secrets and variables** -> **Actions**.
 2. Click **New repository secret** and add the following keys:
    - `AWS_ACCESS_KEY_ID`: Your IAM user's Access Key ID.
@@ -96,9 +86,7 @@ To link your repository to AWS and automate the CI/CD pipeline, add the followin
 ---
 
 ### 6. GitHub Actions Self-Hosted Runner on EC2
-
 To run the deployment commands directly on your EC2 instance (e.g. running the Docker container on port `8080`), you must configure the EC2 instance as a self-hosted runner:
-
 1. Go to your GitHub repository -> **Settings** -> **Actions** -> **Runners**.
 2. Click **New self-hosted runner** and select **Linux**.
 3. Copy the download and configuration commands under **Download** and **Configure**, and run them on your EC2 server:
@@ -116,14 +104,12 @@ tar xzf ./actions-runner-linux-x64-3.x.x.tar.gz
 # Configure the runner (Enter repo URL and Token provided by GitHub UI when prompted)
 ./config.sh --url https://github.com/your-username/your-repo --token YOUR_TOKEN
 ```
-
 4. During configuration:
    - Select the default runner group.
    - Set the runner name (e.g., `ec2-runner`).
    - Add labels (e.g., `self-hosted`, `ubuntu-latest`).
-     - _Important:_ If you configure the runner to handle the `ubuntu-latest` label, ensure your workflow target matches this label, or update `.github/workflows/main.yaml` to specify `runs-on: self-hosted`.
+     - *Important:* If you configure the runner to handle the `ubuntu-latest` label, ensure your workflow target matches this label, or update `.github/workflows/main.yaml` to specify `runs-on: self-hosted`.
 5. Install and run the GitHub runner as a background system service:
-
 ```bash
 sudo ./svc.sh install
 sudo ./svc.sh start
@@ -136,7 +122,6 @@ sudo ./svc.sh start
 Once all prerequisites are met, the workflow operates automatically as defined in `.github/workflows/main.yaml`:
 
 ### Pipeline Workflow Steps
-
 1. **Continuous Integration:** Lints the codebase and runs unit tests.
 2. **Continuous Delivery (Build & Push ECR Image):**
    - Configures AWS credentials from GitHub secrets.
@@ -153,16 +138,13 @@ Once all prerequisites are met, the workflow operates automatically as defined i
 ---
 
 ## 🌐 Production Server Optimization (Optional Nginx Reverse Proxy)
-
 To access the application on port `80` (HTTP) with production-grade reverse proxying:
-
 1. Install Nginx on your EC2 instance:
    ```bash
    sudo apt-get install nginx -y
    ```
 2. Configure Nginx to forward port 80 to your Flask application container (e.g., running on port `8080`):
    Edit `/etc/nginx/sites-available/default`:
-
    ```nginx
    server {
        listen 80;
@@ -176,7 +158,6 @@ To access the application on port `80` (HTTP) with production-grade reverse prox
        }
    }
    ```
-
 3. Restart Nginx:
    ```bash
    sudo systemctl restart nginx
