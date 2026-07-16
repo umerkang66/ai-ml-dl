@@ -1,0 +1,5 @@
+venv
+*.db
+.vscode
+mlruns
+__pycache__
