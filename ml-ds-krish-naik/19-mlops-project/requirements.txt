@@ -12,4 +12,8 @@ catboost
 pyaml
 dill
 mlflow
--e .
+dagshub
+fastapi
+uvicorn
+python-multipart
+# -e .

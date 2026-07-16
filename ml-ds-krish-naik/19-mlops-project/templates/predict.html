@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard - Prediction Console</title>
+    <meta name="description" content="Enter network parameters to classify website security risk.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-color: #DFD5CC;
+            --text-main: #040404;
+            --text-muted: rgba(4, 4, 4, 0.65);
+            --primary: #FAC402;
+            --danger: #EC0926;
+            --card-border: rgba(4, 4, 4, 0.15);
+            --font-family: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-color);
+            border-bottom: 2px solid var(--card-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-family);
+            font-weight: 700;
+            font-size: 1.35rem;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .nav-brand i {
+            color: var(--danger);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--danger);
+        }
+
+        /* Content Layout */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static !important;
+            }
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .panel-title h1 {
+            font-family: var(--font-family);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .panel-title p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-actions-top {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-outline {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--text-main);
+        }
+
+        .btn-outline:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-primary {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary);
+            color: var(--text-main);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Predict Form Grid */
+        .predict-form {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.75rem;
+        }
+
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-limit {
+            font-size: 0.75rem;
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .input-field {
+            background: var(--bg-color);
+            border: 1px solid var(--text-main);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-main);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--danger);
+        }
+
+        /* Form invalid highlight */
+        .input-field:invalid {
+            border-color: var(--danger);
+            background: rgba(236, 9, 38, 0.08);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid var(--card-border);
+            padding-top: 1.25rem;
+        }
+
+        /* Sidebar prediction widget */
+        .sidebar {
+            position: sticky;
+            top: 5.5rem;
+            align-self: start;
+        }
+
+        .result-card {
+            background: var(--bg-color);
+            border: 2px solid var(--text-main);
+            border-radius: 12px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 280px;
+            justify-content: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .result-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            transition: all 0.3s ease;
+            color: var(--bg-color);
+        }
+
+        .result-icon.neutral {
+            background: rgba(4, 4, 4, 0.08);
+            color: var(--text-main);
+            border: 1px solid var(--text-main);
+        }
+
+        .result-icon.loading {
+            background: var(--primary);
+            color: var(--text-main);
+            border: 1px solid var(--text-main);
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .result-icon.legit {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: 1px solid var(--text-main);
+        }
+
+        .result-icon.phish {
+            background: var(--danger);
+            color: var(--bg-color);
+            border: 1px solid var(--danger);
+        }
+
+        .result-title {
+            font-family: var(--font-family);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .result-body {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .result-badge {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            color: var(--bg-color);
+        }
+
+        .result-badge.legit {
+            background: var(--text-main);
+        }
+
+        .result-badge.phish {
+            background: var(--danger);
+        }
+
+        /* Spinner animation */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+        }
+
+        /* Tabs navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-family: var(--font-family);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--danger);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.65rem;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--danger);
+            border-radius: 2px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Batch Upload Container */
+        .batch-container {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--text-main);
+            border-radius: 8px;
+            width: 100%;
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .upload-zone:hover {
+            background-color: rgba(4, 4, 4, 0.04);
+            border-color: var(--danger);
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .upload-zone-text {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .upload-zone-subtext {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            background: rgba(4, 4, 4, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        /* Batch Results Table */
+        .batch-results-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .batch-results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .batch-results-header h2 {
+            font-family: var(--font-family);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.825rem;
+            color: #333;
+        }
+
+        th {
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            font-family: var(--font-family);
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: rgba(4, 4, 4, 0.03);
+        }
+
+        .badge-table {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .badge-table.legit {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-table.phish {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-table.unknown {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="/" class="nav-brand">
+            <i data-lucide="shield-alert" style="width: 24px; height: 24px;"></i>
+            <span>PhishGuard</span>
+        </a>
+        <div class="nav-links">
+            <a href="/predict" class="nav-link active">Predict Risk</a>
+        </div>
+    </nav>
+
+    <div class="container" style="display: block;">
+        
+        <!-- Header -->
+        <div class="panel-header" style="margin-bottom: 1.5rem;">
+            <div class="panel-title">
+                <h1>Predict Website Risk</h1>
+                <p>Verify network and URL features using our trained machine learning models.</p>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button id="tab-btn-single" class="tab-btn active" onclick="switchTab('single')">
+                <i data-lucide="shield" style="width: 16px; height: 16px; display: inline; vertical-align: middle; margin-right: 4px;"></i>
+                Single Prediction
+            </button>
+            <button id="tab-btn-batch" class="tab-btn" onclick="switchTab('batch')">
+                <i data-lucide="layers" style="width: 16px; height: 16px; display: inline; vertical-align: middle; margin-right: 4px;"></i>
+                Batch Prediction (CSV)
+            </button>
+        </div>
+
+        <!-- Single Prediction Tab Content -->
+        <div id="tab-single" class="tab-content active" style="display: grid; grid-template-columns: 1fr 340px; gap: 2rem;">
+            <main class="main-panel">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; gap: 0.75rem;">
+                    <button class="btn btn-outline" onclick="clearForm()">
+                        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                        <span>Reset</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="randomizeForm()">
+                        <i data-lucide="dices" style="width: 16px; height: 16px;"></i>
+                        <span>Randomize Fields</span>
+                    </button>
+                </div>
+                <!-- Prediction Form -->
+                <form id="prediction-form" class="predict-form" onsubmit="submitPrediction(event)">
+                    <div class="inputs-grid" id="form-grid"></div>
+                    <div class="form-footer">
+                        <button type="submit" id="predict-btn" class="btn btn-primary">
+                            <i data-lucide="shield-question" style="width: 18px; height: 18px;"></i>
+                            <span>Predict Security Status</span>
+                        </button>
+                    </div>
+                </form>
+            </main>
+            
+            <aside class="sidebar">
+                <div class="result-card" id="result-widget">
+                    <div class="result-icon neutral" id="result-icon-box">
+                        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 class="result-title" id="result-title">Awaiting Input</h3>
+                    <p class="result-body" id="result-desc">Populate the values on the left and submit the form to receive the ML model classification.</p>
+                    <div id="result-badge-container"></div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Batch Prediction Tab Content -->
+        <div id="tab-batch" class="tab-content" style="display: none;">
+            <div class="batch-container">
+                <div style="text-align: center; max-width: 600px;">
+                    <h3 style="font-family: var(--font-family); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Upload Dataset for Prediction</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                        Select a CSV file containing network metrics. The file can contain the target column <strong>Result</strong> or omit it. The columns must align with the feature keys.
+                    </p>
+                </div>
+
+                <div class="upload-zone" onclick="document.getElementById('csv-file').click()">
+                    <i data-lucide="upload-cloud" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+                    <span class="upload-zone-text">Click to upload or drag & drop your CSV file here</span>
+                    <span class="upload-zone-subtext">Supports .csv files only</span>
+                    <input type="file" id="csv-file" accept=".csv" onchange="handleFileSelect(event)">
+                </div>
+
+                <div id="selected-file-container" style="display: none; flex-direction: column; align-items: center; gap: 1rem;">
+                    <div class="file-info">
+                        <i data-lucide="file-spreadsheet" style="width: 20px; height: 20px;"></i>
+                        <span id="file-name-span">dataset.csv</span>
+                        <span id="file-size-span">(0 KB)</span>
+                    </div>
+                    <button id="batch-predict-btn" class="btn btn-primary" onclick="runBatchPrediction()">
+                        <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+                        <span>Run Batch Prediction</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Batch Results -->
+            <div id="batch-results-section" class="batch-results-section">
+                <div class="batch-results-header">
+                    <div>
+                        <h2>Prediction Results</h2>
+                        <p id="batch-summary-text" style="color: var(--text-muted); font-size: 0.9rem;">Successfully classified 0 rows.</p>
+                    </div>
+                    <button class="btn btn-outline" onclick="downloadPredictions()">
+                        <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                        <span>Download Results CSV</span>
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="results-table">
+                        <thead id="table-head">
+                            <!-- Table columns generated dynamically -->
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Table rows generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>PhishGuard &bull; Minimal Prediction Interface</p>
+    </footer>
+
+    <script>
+        // Columns Schema mapping from dataset limits
+        const columns = [
+            { code: "having_IP_Address", name: "IP Address presence", min: -1, max: 1 },
+            { code: "URL_Length", name: "URL Length", min: -1, max: 1 },
+            { code: "Shortining_Service", name: "Shortening Service", min: -1, max: 1 },
+            { code: "having_At_Symbol", name: "At Symbol Presence", min: -1, max: 1 },
+            { code: "double_slash_redirecting", name: "Double Slash Redirecting", min: -1, max: 1 },
+            { code: "Prefix_Suffix", name: "Prefix/Suffix Dash", min: -1, max: 1 },
+            { code: "having_Sub_Domain", name: "Subdomain Count", min: -1, max: 1 },
+            { code: "SSLfinal_State", name: "SSL State", min: -1, max: 1 },
+            { code: "Domain_registeration_length", name: "Domain Registration Length", min: -1, max: 1 },
+            { code: "Favicon", name: "Favicon Domain Match", min: -1, max: 1 },
+            { code: "port", name: "Non-standard Port", min: -1, max: 1 },
+            { code: "HTTPS_token", name: "HTTPS Token in Domain", min: -1, max: 1 },
+            { code: "Request_URL", name: "Request URL Source", min: -1, max: 1 },
+            { code: "URL_of_Anchor", name: "Anchor URL Source", min: -1, max: 1 },
+            { code: "Links_in_tags", name: "Links in Tags", min: -1, max: 1 },
+            { code: "SFH", name: "Server Form Handler", min: -1, max: 1 },
+            { code: "Submitting_to_email", name: "Mailto: Form Submission", min: -1, max: 1 },
+            { code: "Abnormal_URL", name: "Abnormal URL Structure", min: -1, max: 1 },
+            { code: "Redirect", name: "Redirection Count", min: 0, max: 1 },
+            { code: "on_mouseover", name: "On Mouseover Status", min: -1, max: 1 },
+            { code: "RightClick", name: "Right-Click Disable", min: -1, max: 1 },
+            { code: "popUpWidnow", name: "Popup Window Fields", min: -1, max: 1 },
+            { code: "Iframe", name: "Iframe Usage", min: -1, max: 1 },
+            { code: "age_of_domain", name: "Domain Age", min: -1, max: 1 },
+            { code: "DNSRecord", name: "DNS Record Check", min: -1, max: 1 },
+            { code: "web_traffic", name: "Web Traffic Rank", min: -1, max: 1 },
+            { code: "Page_Rank", name: "Page Rank Value", min: -1, max: 1 },
+            { code: "Google_Index", name: "Google Index Status", min: -1, max: 1 },
+            { code: "Links_pointing_to_page", name: "Incoming Links Count", min: -1, max: 1 },
+            { code: "Statistical_report", name: "Statistical Report Match", min: -1, max: 1 }
+        ];
+
+        // Build the form inputs dynamically
+        function buildForm() {
+            const grid = document.getElementById("form-grid");
+            grid.innerHTML = "";
+
+            columns.forEach(col => {
+                const group = document.createElement("div");
+                group.className = "input-group";
+
+                group.innerHTML = `
+                    <label class="input-label" for="${col.code}">
+                        <span>${col.name}</span>
+                        <span class="input-limit">[${col.min}, ${col.max}]</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        id="${col.code}" 
+                        name="${col.code}" 
+                        min="${col.min}" 
+                        max="${col.max}" 
+                        step="1" 
+                        required 
+                        class="input-field" 
+                        placeholder="Enter ${col.min} to ${col.max}"
+                    >
+                `;
+                grid.appendChild(group);
+            });
+        }
+
+        // Randomize Form values
+        function randomizeForm() {
+            columns.forEach(col => {
+                const input = document.getElementById(col.code);
+                if (input) {
+                    const randomVal = Math.floor(Math.random() * (col.max - col.min + 1)) + col.min;
+                    input.value = randomVal;
+                }
+            });
+        }
+
+        // Clear Form values
+        function clearForm() {
+            document.getElementById("prediction-form").reset();
+            resetResultWidget();
+        }
+
+        function resetResultWidget() {
+            const widget = document.getElementById("result-widget");
+            const iconBox = document.getElementById("result-icon-box");
+            const title = document.getElementById("result-title");
+            const desc = document.getElementById("result-desc");
+            const badgeContainer = document.getElementById("result-badge-container");
+
+            widget.style.borderColor = "var(--text-main)";
+            iconBox.className = "result-icon neutral";
+            iconBox.innerHTML = `<i data-lucide="shield" style="width: 28px; height: 28px;"></i>`;
+            title.innerText = "Awaiting Input";
+            desc.innerText = "Populate the values on the left and submit the form to receive the ML model classification.";
+            badgeContainer.innerHTML = "";
+            lucide.createIcons();
+        }
+
+        // Form Submit
+        async function submitPrediction(e) {
+            e.preventDefault();
+
+            const form = document.getElementById("prediction-form");
+            const predictBtn = document.getElementById("predict-btn");
+            const widget = document.getElementById("result-widget");
+            const iconBox = document.getElementById("result-icon-box");
+            const title = document.getElementById("result-title");
+            const desc = document.getElementById("result-desc");
+            const badgeContainer = document.getElementById("result-badge-container");
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const payload = {};
+            columns.forEach(col => {
+                const input = document.getElementById(col.code);
+                payload[col.code] = parseInt(input.value, 10);
+            });
+
+            // Set loading state
+            predictBtn.disabled = true;
+            predictBtn.innerHTML = `<i data-lucide="loader-2" class="spinner" style="width: 18px; height: 18px;"></i><span>Predicting...</span>`;
+            
+            widget.style.borderColor = "var(--text-main)";
+            iconBox.className = "result-icon loading";
+            iconBox.innerHTML = `<i data-lucide="refresh-cw" class="spinner" style="width: 28px; height: 28px;"></i>`;
+            title.innerText = "Analyzing Features";
+            desc.innerText = "Transmitting parameters to ML endpoint and evaluating classification trees...";
+            badgeContainer.innerHTML = "";
+            lucide.createIcons();
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const isLegitimate = result.label === "Legitimate";
+
+                    if (isLegitimate) {
+                        widget.style.borderColor = "var(--text-main)";
+                        iconBox.className = "result-icon legit";
+                        iconBox.innerHTML = `<i data-lucide="shield-check" style="width: 28px; height: 28px;"></i>`;
+                        title.innerText = "Legitimate Website";
+                        desc.innerText = `The model analyzed the 30 indicators and classified this URL signature as safe with class prediction (${result.prediction}).`;
+                        badgeContainer.innerHTML = `<span class="result-badge legit">Legitimate</span>`;
+                    } else {
+                        widget.style.borderColor = "var(--danger)";
+                        iconBox.className = "result-icon phish";
+                        iconBox.innerHTML = `<i data-lucide="shield-alert" style="width: 28px; height: 28px;"></i>`;
+                        title.innerText = "Phishing Signature Detected";
+                        desc.innerText = `Warning! The input values match patterns of fraudulent portals. Model prediction class (${result.prediction}).`;
+                        badgeContainer.innerHTML = `<span class="result-badge phish">Phishing Risk</span>`;
+                    }
+                } else {
+                    const errText = await response.text();
+                    widget.style.borderColor = "var(--danger)";
+                    iconBox.className = "result-icon neutral";
+                    iconBox.innerHTML = `<i data-lucide="alert-triangle" style="width: 28px; height: 28px;"></i>`;
+                    title.innerText = "Prediction Error";
+                    desc.innerText = `Server returned status ${response.status}: ${errText || "Invalid parameters or model not trained yet"}`;
+                }
+            } catch (error) {
+                widget.style.borderColor = "var(--danger)";
+                iconBox.className = "result-icon neutral";
+                iconBox.innerHTML = `<i data-lucide="alert-circle" style="width: 28px; height: 28px;"></i>`;
+                title.innerText = "Network Error";
+                desc.innerText = `Failed to connect to backend endpoint. Details: ${error.message}`;
+            } finally {
+                predictBtn.disabled = false;
+                predictBtn.innerHTML = `<i data-lucide="shield-question" style="width: 18px; height: 18px;"></i><span>Predict Security Status</span>`;
+                lucide.createIcons();
+            }
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            const singleTab = document.getElementById("tab-single");
+            const batchTab = document.getElementById("tab-batch");
+            const singleBtn = document.getElementById("tab-btn-single");
+            const batchBtn = document.getElementById("tab-btn-batch");
+
+            if (tab === 'single') {
+                singleTab.style.display = "grid";
+                batchTab.style.display = "none";
+                singleBtn.classList.add("active");
+                batchBtn.classList.remove("active");
+            } else {
+                singleTab.style.display = "none";
+                batchTab.style.display = "block";
+                singleBtn.classList.remove("active");
+                batchBtn.classList.add("active");
+            }
+            lucide.createIcons();
+        }
+
+        // Batch prediction support
+        let uploadedFile = null;
+        let predictionResults = null;
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length === 0) return;
+            uploadedFile = files[0];
+            
+            document.getElementById("file-name-span").innerText = uploadedFile.name;
+            document.getElementById("file-size-span").innerText = `(${(uploadedFile.size / 1024).toFixed(2)} KB)`;
+            document.getElementById("selected-file-container").style.display = "flex";
+            
+            // Hide previous results
+            document.getElementById("batch-results-section").style.display = "none";
+        }
+
+        async function runBatchPrediction() {
+            if (!uploadedFile) return;
+
+            const btn = document.getElementById("batch-predict-btn");
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="spinner" style="width: 18px; height: 18px;"></i><span>Processing Batch...</span>`;
+            lucide.createIcons();
+
+            const formData = new FormData();
+            formData.append("file", uploadedFile);
+
+            try {
+                const response = await fetch("/predict_batch", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    predictionResults = result;
+                    displayBatchResults(result);
+                } else {
+                    const errText = await response.text();
+                    alert(`Batch Prediction Failed: ${errText || "Invalid file content or model not trained"}`);
+                }
+            } catch (err) {
+                alert(`Error: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                lucide.createIcons();
+            }
+        }
+
+        function displayBatchResults(data) {
+            const section = document.getElementById("batch-results-section");
+            const head = document.getElementById("table-head");
+            const body = document.getElementById("table-body");
+            const summary = document.getElementById("batch-summary-text");
+
+            head.innerHTML = "";
+            body.innerHTML = "";
+
+            if (!data.records || data.records.length === 0) {
+                summary.innerText = "No records found.";
+                section.style.display = "block";
+                return;
+            }
+
+            summary.innerText = `Successfully processed ${data.records.length} records.`;
+
+            const columns = data.columns;
+            const targetCol = data.target_column;
+            const hasTarget = data.has_target;
+
+            // Header construction
+            const headerRow = document.createElement("tr");
+            
+            const thIdx = document.createElement("th");
+            thIdx.innerText = "#";
+            headerRow.appendChild(thIdx);
+
+            const thPred = document.createElement("th");
+            thPred.innerText = "Predicted Result";
+            thPred.style.backgroundColor = "var(--danger)";
+            thPred.style.color = "white";
+            headerRow.appendChild(thPred);
+
+            if (hasTarget) {
+                const thTarget = document.createElement("th");
+                thTarget.innerText = "Actual Result (CSV)";
+                thTarget.style.backgroundColor = "#4a4a4a";
+                thTarget.style.color = "white";
+                headerRow.appendChild(thTarget);
+            }
+
+            columns.forEach(col => {
+                if (col !== 'Predicted_Value' && col !== 'Predicted_Label' && col !== targetCol) {
+                    const th = document.createElement("th");
+                    th.innerText = col;
+                    headerRow.appendChild(th);
+                }
+            });
+
+            head.appendChild(headerRow);
+
+            // Populate rows
+            data.records.forEach((row, idx) => {
+                const tr = document.createElement("tr");
+
+                const tdIdx = document.createElement("td");
+                tdIdx.innerText = idx + 1;
+                tr.appendChild(tdIdx);
+
+                const tdPred = document.createElement("td");
+                const label = row['Predicted_Label'] || "Unknown";
+                const isLegit = label === "Legitimate";
+                tdPred.innerHTML = `<span class="badge-table ${isLegit ? 'legit' : 'phish'}">${label} (${row['Predicted_Value']})</span>`;
+                tr.appendChild(tdPred);
+
+                if (hasTarget) {
+                    const tdTarget = document.createElement("td");
+                    const actualVal = row[targetCol];
+                    let actualText = "Unknown";
+                    let badgeClass = "unknown";
+                    if (actualVal === 1 || String(actualVal) === "1" || String(actualVal).toLowerCase() === "legitimate") {
+                        actualText = "Legitimate";
+                        badgeClass = "legit";
+                    } else if (actualVal === -1 || actualVal === 0 || String(actualVal) === "-1" || String(actualVal) === "0" || String(actualVal).toLowerCase() === "phishing") {
+                        actualText = "Phishing";
+                        badgeClass = "phish";
+                    } else if (actualVal !== undefined && actualVal !== null) {
+                        actualText = String(actualVal);
+                    }
+                    tdTarget.innerHTML = `<span class="badge-table ${badgeClass}">${actualText} (${actualVal})</span>`;
+                    tr.appendChild(tdTarget);
+                }
+
+                columns.forEach(col => {
+                    if (col !== 'Predicted_Value' && col !== 'Predicted_Label' && col !== targetCol) {
+                        const td = document.createElement("td");
+                        td.innerText = row[col] !== undefined ? row[col] : "";
+                        tr.appendChild(td);
+                    }
+                });
+
+                body.appendChild(tr);
+            });
+
+            section.style.display = "block";
+            lucide.createIcons();
+        }
+
+        function downloadPredictions() {
+            if (!predictionResults || !predictionResults.records) return;
+
+            const columns = predictionResults.columns;
+            const records = predictionResults.records;
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += columns.join(",") + "\n";
+
+            records.forEach(row => {
+                const values = columns.map(col => {
+                    const val = row[col];
+                    const strVal = val === null || val === undefined ? "" : String(val);
+                    if (strVal.includes(",") || strVal.includes('"') || strVal.includes("\n")) {
+                        return '"' + strVal.replace(/"/g, '""') + '"';
+                    }
+                    return strVal;
+                });
+                csvContent += values.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "prediction_results.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize Form
+        buildForm();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

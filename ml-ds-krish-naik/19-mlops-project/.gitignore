@@ -80,8 +80,10 @@ venv.bak/
 *.swp
 *.swo
 
-# OS generated files
 .DS_Store
 Thumbs.db
 mlruns
 
+!final_model/*
+
+upload
